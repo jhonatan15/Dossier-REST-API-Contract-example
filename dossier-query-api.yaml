@@ -1,0 +1,177 @@
+openapi: 3.0.0
+info:
+  title: Dossier API
+  description: API para consultar información de dossiers.
+  version: "1.0.0"
+servers:
+  - url: https://api.miempresa.com
+paths:
+  /dossier/query:
+    get:
+      summary: Consulta de dossiers
+      description: Endpoint para obtener información sobre los dossiers con filtros avanzados.
+      operationId: getDossiers
+      parameters:
+        - name: search
+          in: query
+          description: Cadena opcional para búsqueda.
+          required: false
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          description: Fecha de inicio (requerida).
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: Fecha de fin (requerida).
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: status_id
+          in: query
+          description: ID del estado (opcional).
+          required: false
+          schema:
+            type: string
+        - name: process_id
+          in: query
+          description: ID del proceso (opcional).
+          required: false
+          schema:
+            type: string
+        - name: tax_id
+          in: query
+          description: ID del contribuyente (requerido).
+          required: true
+          schema:
+            type: string
+        - name: cursor
+          in: query
+          description: Cursor para paginación (opcional).
+          required: false
+          schema:
+            type: string
+        - name: cursor_data
+          in: query
+          description: Datos del cursor para paginación (opcional).
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Límite de resultados por página (opcional).
+          required: false
+          schema:
+            type: integer
+        - name: order_field
+          in: query
+          description: Campo de ordenamiento (opcional).
+          required: false
+          schema:
+            type: string
+        - name: order
+          in: query
+          description: Ordenamiento ascendente o descendente (opcional).
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  last_cursor:
+                    type: string
+                  data_cursor:
+                    type: string
+                  count:
+                    type: integer
+                  dossier_list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        dossier_number:
+                          type: string
+                        generation_date:
+                          type: string
+                          format: date
+                        document_number:
+                          type: string
+                        taxpayer:
+                          type: string
+                        status:
+                          type: string
+                        process:
+                          type: string
+                        stage:
+                          type: string
+                        official_settlements_trds:
+                          type: array
+                          items:
+                            type: string
+                        energy_meter_code:
+                          type: string
+                        total_value:
+                          type: string
+        '400':
+          description: Solicitud inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: No autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      security:
+        - apiKeyAuth: []
+        - bearerAuth: []
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      name: X-api-key
+      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
